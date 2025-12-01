@@ -1,6 +1,8 @@
 import pygame
-from .sprites import Santa
+from math import ceil
+from .sprites import Santa, Layer
 from .ui import Button
+from .settings import WORLD_SPEED
 
 class State:
     def __init__(self, game, assets):
@@ -65,12 +67,78 @@ class MenuState(State):
 class GameState(State):
     def __init__(self, game, assets):
         super().__init__(game, assets)
+        self.assets = assets
+        self.game = game
+        self.world_speed = WORLD_SPEED
+
+        self.sw = self.assets.images['sky'].get_width()
+        self.sh = self.assets.images['sky'].get_height()
+        self.ground_level = self.sh/1.15
+
+        self.santa = Santa(self.assets, 0, 0)
+        self.santa.rect = self.santa.image.get_rect(center=(self.sw/2, self.sh/3.2))
+        self.santa.set_state("flying")
+
+        self.land_g = pygame.sprite.Group()
+        self.bg_slopes_g = pygame.sprite.Group()
+        self.lights_g = pygame.sprite.Group()
+
+    def parallax(self, group, image, default_pos, speed, flip_to_match=False):
+        # manages the layers groups
+
+        group_length = len(group)
+
+        # number of instances of the given surface needed to cover the screen
+        num = ceil(self.sw/image.get_width())
+        
+        if group_length < num*2:
+            pos = default_pos
+            should_flip = False
+            
+            if group_length > 0:
+                last_sprite = group.sprites()[-1]
+                pos = (last_sprite.rect.topright[0]-1, last_sprite.rect.topright[1])
+                
+                if flip_to_match:
+                    last_was_flipped = getattr(last_sprite, 'is_flipped', False)
+                    should_flip = not last_was_flipped
+
+            if should_flip:
+                image = pygame.transform.flip(image, True, False)
+
+            new_layer = Layer(image, speed, pos)
+            new_layer.is_flipped = should_flip 
+            
+            group.add(new_layer)
+
+        # kill layers that are no longer visible
+        for sprite in group.sprites():
+            if sprite.rect.topright[0] < 0:
+                sprite.kill()
+
 
     def handle_event(self, event):
-        print(1)
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.game.state = MenuState(self.game, self.assets)
-        
+    
+    def update(self, dt):
+        self.parallax(self.land_g, self.assets.images['ground'], (0, self.ground_level), WORLD_SPEED)
+        self.parallax(self.bg_slopes_g, self.assets.images['slopes'], (0, 
+                                                                       self.ground_level-self.assets.images['slopes'].get_height()+1), 
+                                                                       WORLD_SPEED*0.85, flip_to_match=True)
+        self.parallax(self.lights_g, self.assets.images['lights'], 
+                      (0, self.ground_level-self.assets.images['lights'].get_height()+1), WORLD_SPEED)
+
+        self.santa.update(dt)
+
+        self.bg_slopes_g.update(dt)
+        self.lights_g.update(dt)
+        self.land_g.update(dt)
+    
     def draw(self, surface):
         surface.blit(self.assets.images['sky'], (0, 0))
-        surface.fill(pygame.Color(255, 255, 255, 50))
+        surface.blit(self.santa.image, self.santa.rect)
+
+        self.bg_slopes_g.draw(surface)
+        self.lights_g.draw(surface)
+        self.land_g.draw(surface)

@@ -5,6 +5,7 @@ GAME_SIZE = (1280, 720)
 CAPTION = "Checking it twice!"
 
 FPS = 60
+WORLD_SPEED = 100
 
 FILE_PATH = os.path.abspath(__file__)
 SRC_DIR = os.path.dirname(FILE_PATH)

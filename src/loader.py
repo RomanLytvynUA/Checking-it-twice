@@ -26,6 +26,9 @@ class Assets:
         self.images['btn_active'] = self.resize(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'btn_active.png')).convert_alpha(), self.images['btn'].get_size())
 
         self.images['sky'] = self.resize(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'background', 'sky.png')).convert(), GAME_SIZE)
+        self.images['ground'] = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'background', 'ground.png')).convert(), 1)
+        self.images['slopes'] = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'background', 'bg_slope.png')).convert_alpha(), 1)
+        self.images['lights'] = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'background', 'lights.png')).convert_alpha(), 0.8)
 
         self.images['menu_fg'] =  self.resize(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'menu_fg.png')).convert_alpha(), GAME_SIZE)
 
@@ -34,4 +37,8 @@ class Assets:
         self.images['santa_idle'] = []
         for i in range(4):
             self.images['santa_idle'].append(self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'sprites', f'santa_idle{i}.png')).convert_alpha(), 0.25))
+        
+        self.images['santa_flying'] = []
+        for i in range(8):
+            self.images['santa_flying'].append(self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'sprites', f'santa_flying_{i}.png')).convert_alpha(), 0.25))
         
