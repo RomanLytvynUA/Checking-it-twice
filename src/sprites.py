@@ -19,7 +19,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
         self.animate(dt)
 
 
-class Layer(pygame.sprite.Sprite):
+class Bg_Object(pygame.sprite.Sprite):
     def __init__(self, image, speed, pos):
         super().__init__()
         self.image = image

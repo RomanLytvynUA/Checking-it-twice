@@ -29,6 +29,13 @@ class Assets:
         self.images['ground'] = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'background', 'ground.png')).convert(), 1)
         self.images['slopes'] = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'background', 'bg_slope.png')).convert_alpha(), 1)
         self.images['lights'] = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'background', 'lights.png')).convert_alpha(), 0.8)
+        self.images['bg_pine'] = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'background', 'bg_pine.png')).convert_alpha(), 0.1)
+        self.images['fg_pine'] = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'background', 'fg_pine.png')).convert_alpha(), 0.15)
+        self.images['fg_slopes'] = []
+        for i in range(4):
+            self.images['fg_slopes'].append(self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'background', f'slope_{i}.png')).convert_alpha(), 0.1))
+        
+
 
         self.images['menu_fg'] =  self.resize(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'menu_fg.png')).convert_alpha(), GAME_SIZE)
 

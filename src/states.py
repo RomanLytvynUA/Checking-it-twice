@@ -1,6 +1,7 @@
 import pygame
+from random import randint, uniform, choice
 from math import ceil
-from .sprites import Santa, Layer
+from .sprites import Santa, Bg_Object
 from .ui import Button
 from .settings import WORLD_SPEED
 
@@ -83,6 +84,28 @@ class GameState(State):
         self.bg_slopes_g = pygame.sprite.Group()
         self.lights_g = pygame.sprite.Group()
 
+        self.bg_pines_g = pygame.sprite.Group()
+        self.fg_pines_g = pygame.sprite.Group()
+        self.fg_slopes_g = pygame.sprite.Group()
+
+    
+    def prop(self, group, images, speed, max, max_scaling):
+        # manages props such ass bg pines, slopes etc.
+
+        group_length = len(group)
+
+        if group_length < max:
+            pos_x = self.sw + randint(0, self.sw)
+            image = pygame.transform.scale_by(choice(images), uniform(1-max_scaling, 1+max_scaling))
+            obj = Bg_Object(image, speed, (pos_x, self.ground_level-1-image.get_height()))
+            group.add(obj)
+        
+        # kill objects that are no longer visible
+        for sprite in group.sprites():
+            if sprite.rect.topright[0] < 0:
+                sprite.kill()
+
+
     def parallax(self, group, image, default_pos, speed, flip_to_match=False):
         # manages the layers groups
 
@@ -106,7 +129,7 @@ class GameState(State):
             if should_flip:
                 image = pygame.transform.flip(image, True, False)
 
-            new_layer = Layer(image, speed, pos)
+            new_layer = Bg_Object(image, speed, pos)
             new_layer.is_flipped = should_flip 
             
             group.add(new_layer)
@@ -125,20 +148,31 @@ class GameState(State):
         self.parallax(self.land_g, self.assets.images['ground'], (0, self.ground_level), WORLD_SPEED)
         self.parallax(self.bg_slopes_g, self.assets.images['slopes'], (0, 
                                                                        self.ground_level-self.assets.images['slopes'].get_height()+1), 
-                                                                       WORLD_SPEED*0.85, flip_to_match=True)
+                                                                       WORLD_SPEED*0.8, flip_to_match=True)
         self.parallax(self.lights_g, self.assets.images['lights'], 
                       (0, self.ground_level-self.assets.images['lights'].get_height()+1), WORLD_SPEED)
+
+        self.prop(self.bg_pines_g, [self.assets.images['bg_pine']], WORLD_SPEED*0.3, 10, 0.1)
+        self.prop(self.fg_pines_g, [self.assets.images['fg_pine']], WORLD_SPEED, 3, 0.1)
+        self.prop(self.fg_slopes_g, self.assets.images['fg_slopes'], WORLD_SPEED, 5, 0.1)
 
         self.santa.update(dt)
 
         self.bg_slopes_g.update(dt)
         self.lights_g.update(dt)
         self.land_g.update(dt)
+        self.bg_pines_g.update(dt)
+        self.fg_pines_g.update(dt)
+        self.fg_slopes_g.update(dt)
     
     def draw(self, surface):
         surface.blit(self.assets.images['sky'], (0, 0))
-        surface.blit(self.santa.image, self.santa.rect)
 
+        self.bg_pines_g.draw(surface)
         self.bg_slopes_g.draw(surface)
+        self.fg_pines_g.draw(surface)
         self.lights_g.draw(surface)
         self.land_g.draw(surface)
+        self.fg_slopes_g.draw(surface)
+
+        surface.blit(self.santa.image, self.santa.rect)
