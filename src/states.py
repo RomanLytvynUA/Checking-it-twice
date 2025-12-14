@@ -1,7 +1,7 @@
 import pygame
 from random import randint, uniform, choice
 from math import ceil
-from .sprites import Santa, Bg_Object
+from .sprites import Santa, Bg_Object, House
 from .ui import Button
 from .settings import WORLD_SPEED
 
@@ -87,10 +87,24 @@ class GameState(State):
         self.bg_pines_g = pygame.sprite.Group()
         self.fg_pines_g = pygame.sprite.Group()
         self.fg_slopes_g = pygame.sprite.Group()
+        self.houses_g = pygame.sprite.Group()
 
     
+    def handle_houses(self, speed):
+        if len(self.houses_g) == 0:
+            pos_x = self.sw + randint(0, self.sw)
+            house_asset = choice(self.assets.images['houses'])
+            obj = House(house_asset['image'], speed, house_asset['chimney_offset_ratio'], (pos_x, self.ground_level-1-house_asset['image'].get_height()))
+            self.houses_g.add(obj)
+        
+        # kill house when no longer visible
+        for sprite in self.houses_g.sprites():
+            if sprite.rect.topright[0] < 0:
+                sprite.kill()
+
+
     def prop(self, group, images, speed, max, max_scaling):
-        # manages props such ass bg pines, slopes etc.
+        # manages props such as bg pines, slopes etc.
 
         group_length = len(group)
 
@@ -156,6 +170,8 @@ class GameState(State):
         self.prop(self.fg_pines_g, [self.assets.images['fg_pine']], WORLD_SPEED, 3, 0.1)
         self.prop(self.fg_slopes_g, self.assets.images['fg_slopes'], WORLD_SPEED, 5, 0.1)
 
+        self.handle_houses(WORLD_SPEED)
+
         self.santa.update(dt)
 
         self.bg_slopes_g.update(dt)
@@ -164,6 +180,7 @@ class GameState(State):
         self.bg_pines_g.update(dt)
         self.fg_pines_g.update(dt)
         self.fg_slopes_g.update(dt)
+        self.houses_g.update(dt)
     
     def draw(self, surface):
         surface.blit(self.assets.images['sky'], (0, 0))
@@ -174,5 +191,6 @@ class GameState(State):
         self.lights_g.draw(surface)
         self.land_g.draw(surface)
         self.fg_slopes_g.draw(surface)
+        self.houses_g.draw(surface)
 
         surface.blit(self.santa.image, self.santa.rect)

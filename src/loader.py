@@ -25,6 +25,18 @@ class Assets:
         self.images['btn'] = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'btn.png')).convert_alpha(), 0.25)
         self.images['btn_active'] = self.resize(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'btn_active.png')).convert_alpha(), self.images['btn'].get_size())
 
+        self.images['houses'] = [{
+            'image': self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'sprites', 'house_1.png')).convert_alpha(), 0.2),
+            'chimney_offset_ratio': 0.69,
+        },{
+            'image': self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'sprites', 'house_2.png')).convert_alpha(), 0.2),
+            'chimney_offset_ratio': 0.63,
+        },{
+            'image': self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'sprites', 'house_3.png')).convert_alpha(), 0.2),
+            'chimney_offset_ratio': 0.63,
+        },
+        ]
+
         self.images['sky'] = self.resize(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'background', 'sky.png')).convert(), GAME_SIZE)
         self.images['ground'] = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'background', 'ground.png')).convert(), 1)
         self.images['slopes'] = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'background', 'bg_slope.png')).convert_alpha(), 1)

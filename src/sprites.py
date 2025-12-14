@@ -36,6 +36,12 @@ class Bg_Object(pygame.sprite.Sprite):
         self.shift(dt)
 
 
+class House(Bg_Object):
+    def __init__(self, image, speed, chimney_offset_ratio, pos):
+        super().__init__(image, speed, pos)
+        self.chimney_offset = image.get_width()*chimney_offset_ratio
+
+
 class Santa(AnimatedSprite):
     def __init__(self, assets, x, y):
         self.assets = assets
