@@ -74,10 +74,9 @@ python3 main.py
   - [x] Dynamic Resolution Scaling
   - [x] Main Menu
   - [ ] Settings tab
-  - [ ] Parallax Background Scrolling
-  - [ ] Santa Physics & Movement
+  - [x] Parallax Background Scrolling
+  - [x] Santa Physics & Movement
   - [ ] Randomized houses generation
   - [ ] Dossier system
   - [ ] Random events
-  - [ ] Ambient events
   - [ ] Dossier System
