@@ -88,10 +88,35 @@ class GameState(State):
         self.fg_pines_g = pygame.sprite.Group()
         self.fg_slopes_g = pygame.sprite.Group()
         self.houses_g = pygame.sprite.Group()
+        
+        self.initial_scene_setup()
 
         self.music_channel = pygame.mixer.Channel(MUSIC_CHANNEL_ID)
         self.music_channel.play(self.assets.audio['main'], loops=-1)
-    
+
+
+    def initial_scene_setup(self):
+        # set up the bg pines
+        for i in range(10):
+            pos_x = randint(0, self.sw)
+            image = pygame.transform.scale_by(self.assets.images['bg_pine'], uniform(0.9, 1.1))
+            obj = Bg_Object(image, self.world_speed*0.3, (pos_x, self.ground_level-1-image.get_height()))
+            self.bg_pines_g.add(obj)
+        
+        # set up the fg pines
+        for i in range(3):
+            pos_x = randint(0, self.sw)
+            image = pygame.transform.scale_by(self.assets.images['fg_pine'], uniform(0.9, 1.1))
+            obj = Bg_Object(image, self.world_speed, (pos_x, self.ground_level-1-image.get_height()))
+            self.fg_pines_g.add(obj)
+
+        # set up fg slopes
+        for i in range(5):
+            pos_x = randint(0, self.sw)
+            image = pygame.transform.scale_by(choice(self.assets.images['fg_slopes']), uniform(0.9, 1.1))
+            obj = Bg_Object(image, self.world_speed, (pos_x, self.ground_level-1-image.get_height()))
+            self.fg_slopes_g.add(obj)
+
     def handle_houses(self, speed):
         if len(self.houses_g) == 0:
             pos_x = self.sw + randint(0, self.sw)
