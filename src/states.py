@@ -3,7 +3,7 @@ from random import randint, uniform, choice
 from math import ceil
 from .sprites import Santa, Bg_Object, House
 from .ui import Button
-from .settings import WORLD_SPEED
+from .settings import WORLD_SPEED, MUSIC_CHANNEL_ID
 
 class State:
     def __init__(self, game, assets):
@@ -25,8 +25,8 @@ class MenuState(State):
         super().__init__(game, assets)
         self.santa = Santa(self.assets, 100, 300)
         
-        pygame.mixer.music.load(assets.audio['menu_path'])
-        pygame.mixer.music.play(-1)
+        self.music_channel = pygame.mixer.Channel(MUSIC_CHANNEL_ID)
+        self.music_channel.play(self.assets.audio['menu'], loops=-1)
 
         sw = self.assets.images['sky'].get_width()
 
@@ -48,10 +48,10 @@ class MenuState(State):
     
     def handle_event(self, event):
         if self.start_btn.handle_event(event):
-            pygame.mixer.music.fadeout(500)
+            pygame.mixer.Channel(MUSIC_CHANNEL_ID).fadeout(500)
             self.game.state = GameState(self.game, self.assets)
         elif self.settings_btn.handle_event(event):
-            pygame.mixer.music.fadeout(500)
+            pygame.mixer.Channel(MUSIC_CHANNEL_ID).fadeout(500)
         elif self.exit_btn.handle_event(event):
             return 1
 
@@ -89,6 +89,8 @@ class GameState(State):
         self.fg_slopes_g = pygame.sprite.Group()
         self.houses_g = pygame.sprite.Group()
 
+        self.music_channel = pygame.mixer.Channel(MUSIC_CHANNEL_ID)
+        self.music_channel.play(self.assets.audio['main'], loops=-1)
     
     def handle_houses(self, speed):
         if len(self.houses_g) == 0:

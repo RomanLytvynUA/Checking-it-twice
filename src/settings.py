@@ -11,3 +11,5 @@ FILE_PATH = os.path.abspath(__file__)
 SRC_DIR = os.path.dirname(FILE_PATH)
 BASE_DIR = os.path.dirname(SRC_DIR)
 ASSETS_DIR = os.path.join(BASE_DIR, 'assets')
+
+MUSIC_CHANNEL_ID = 7

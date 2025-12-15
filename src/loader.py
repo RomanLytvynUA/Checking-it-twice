@@ -16,7 +16,9 @@ class Assets:
                                                          int(GAME_SIZE[0]*percentage/surface.get_width()*surface.get_height())))
 
     def load(self):
-        self.audio['menu_path'] = os.path.join(ASSETS_DIR, 'audio', 'menu.ogg')
+        self.audio['menu'] = pygame.mixer.Sound(os.path.join(ASSETS_DIR, 'audio', 'menu.ogg'))
+        self.audio['main'] = pygame.mixer.Sound(os.path.join(ASSETS_DIR, 'audio', 'main.ogg'))
+        self.audio['main'].set_volume(0.3)
 
         self.fonts['main'] = pygame.font.Font(os.path.join(ASSETS_DIR, 'fonts', 'main.ttf'), int(GAME_SIZE[0]*0.035))
 
