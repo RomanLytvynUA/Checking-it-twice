@@ -223,6 +223,7 @@ class GameState(State):
     def draw(self, surface):
         surface.blit(self.assets.images['sky'], (0, 0))
 
+        surface.blit(self.assets.images['top_bar'], (0, -1))
         self.gift_btn.draw(surface)
         self.coal_btn.draw(surface)
         self.exit_btn.draw(surface)

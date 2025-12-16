@@ -1,6 +1,6 @@
 import pygame
 import os
-from .settings import ASSETS_DIR, GAME_SIZE
+from .settings import ASSETS_DIR, GAME_SIZE, BAR_HEIGHT, BAR_OPACITY
 
 class Assets:
     def __init__(self):
@@ -26,11 +26,13 @@ class Assets:
         self.images['cursor'] = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'cursor.png')).convert_alpha(), 0.02)
         self.images['txt_btn'] = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'txt_btn.png')).convert_alpha(), 0.25)
         self.images['txt_btn_active'] = self.resize(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'txt_btn_active.png')).convert_alpha(), self.images['txt_btn'].get_size())
-        self.images['ico_btn'] = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'ico_btn.png')).convert_alpha(), 0.05)
+        self.images['ico_btn'] = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'ico_btn.png')).convert_alpha(), 0.045)
         self.images['ico_btn_active'] = self.resize(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'ico_btn_active.png')).convert_alpha(), self.images['ico_btn'].get_size())
         self.images['gift_icon'] = self.resize(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'gift_icon.png')).convert_alpha(), tuple([i*0.65 for i in self.images['ico_btn'].get_size()]))
         self.images['coal_icon'] = self.resize(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'coal_icon.png')).convert_alpha(), tuple([i*0.65 for i in self.images['ico_btn'].get_size()]))
         self.images['exit_icon'] = self.resize(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'exit_icon.png')).convert_alpha(), tuple([i*0.65 for i in self.images['ico_btn'].get_size()]))
+        self.images['top_bar'] = self.resize(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'top_bar.png')).convert_alpha(), (GAME_SIZE[0], 1.11*(self.images['ico_btn'].get_height()+2*BAR_HEIGHT)))
+        self.images['top_bar'].set_alpha(int(255*BAR_OPACITY))
 
         self.images['houses'] = [{
             'image': self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'sprites', 'house_1.png')).convert_alpha(), 0.2),
