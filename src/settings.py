@@ -12,4 +12,8 @@ SRC_DIR = os.path.dirname(FILE_PATH)
 BASE_DIR = os.path.dirname(SRC_DIR)
 ASSETS_DIR = os.path.join(BASE_DIR, 'assets')
 
+GROUND_LEVEL = GAME_SIZE[1]/1.15
+BAR_HEIGHT = GAME_SIZE[1]*0.04
+BAR_SIDE_MARGINS = GAME_SIZE[1]*0.04
+
 MUSIC_CHANNEL_ID = 7

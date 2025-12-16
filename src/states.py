@@ -2,8 +2,8 @@ import pygame
 from random import randint, uniform, choice
 from math import ceil
 from .sprites import Santa, Bg_Object, House
-from .ui import Button
-from .settings import WORLD_SPEED, MUSIC_CHANNEL_ID
+from .ui import MenuButton, GameButton
+from .settings import WORLD_SPEED, MUSIC_CHANNEL_ID, GROUND_LEVEL, BAR_HEIGHT, BAR_SIDE_MARGINS
 
 class State:
     def __init__(self, game, assets):
@@ -34,14 +34,14 @@ class MenuState(State):
         self.title_x = (sw / 2) - (tw / 2)
         self.title_y = self.assets.images['sky'].get_height() * 0.05
 
-        btnw = self.assets.images['btn'].get_width()
+        btnw = self.assets.images['txt_btn'].get_width()
         btns_x = (sw / 2) - (btnw / 2)
         btns_offset_y = 100
         first_btn_y = self.title_y+self.assets.images['title'].get_height() + btns_offset_y
 
-        self.start_btn = Button(self.assets, btns_x, first_btn_y, "START ROUTE")
-        self.settings_btn = Button(self.assets, btns_x, first_btn_y+btns_offset_y, "SETTINGS")
-        self.exit_btn = Button(self.assets, btns_x, first_btn_y+btns_offset_y*2, "EXIT")
+        self.start_btn = MenuButton(self.assets, btns_x, first_btn_y, "START ROUTE")
+        self.settings_btn = MenuButton(self.assets, btns_x, first_btn_y+btns_offset_y, "SETTINGS")
+        self.exit_btn = MenuButton(self.assets, btns_x, first_btn_y+btns_offset_y*2, "EXIT")
 
     def update(self, dt):
         self.santa.update(dt)
@@ -74,7 +74,7 @@ class GameState(State):
 
         self.sw = self.assets.images['sky'].get_width()
         self.sh = self.assets.images['sky'].get_height()
-        self.ground_level = self.sh/1.15
+        self.ground_level = GROUND_LEVEL
 
         self.santa = Santa(self.assets, 0, 0)
         self.santa.rect = self.santa.image.get_rect(center=(self.sw/2, self.sh/3.2))
@@ -88,8 +88,12 @@ class GameState(State):
         self.fg_pines_g = pygame.sprite.Group()
         self.fg_slopes_g = pygame.sprite.Group()
         self.houses_g = pygame.sprite.Group()
-        
+
         self.initial_scene_setup()
+
+        self.exit_btn = GameButton(self.assets, BAR_SIDE_MARGINS, BAR_HEIGHT, self.assets.images['exit_icon'])
+        self.coal_btn = GameButton(self.assets, self.sw/2-1.4*self.assets.images['coal_icon'].get_width(), BAR_HEIGHT, self.assets.images['coal_icon'])
+        self.gift_btn = GameButton(self.assets, self.sw/2+0.9*self.assets.images['gift_icon'].get_width(), BAR_HEIGHT, self.assets.images['gift_icon'])
 
         self.music_channel = pygame.mixer.Channel(MUSIC_CHANNEL_ID)
         self.music_channel.play(self.assets.audio['main'], loops=-1)
@@ -182,9 +186,16 @@ class GameState(State):
 
 
     def handle_event(self, event):
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+        if (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE) or self.exit_btn.handle_event(event):
             self.game.state = MenuState(self.game, self.assets)
-    
+
+        if self.gift_btn.handle_event(event):
+            # drop a gift
+            pass
+        elif self.coal_btn.handle_event(event):
+            # drop a coal
+            pass
+
     def update(self, dt):
         self.parallax(self.land_g, self.assets.images['ground'], (0, self.ground_level), WORLD_SPEED)
         self.parallax(self.bg_slopes_g, self.assets.images['slopes'], (0, 
@@ -211,6 +222,10 @@ class GameState(State):
     
     def draw(self, surface):
         surface.blit(self.assets.images['sky'], (0, 0))
+
+        self.gift_btn.draw(surface)
+        self.coal_btn.draw(surface)
+        self.exit_btn.draw(surface)
 
         self.bg_pines_g.draw(surface)
         self.bg_slopes_g.draw(surface)

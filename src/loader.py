@@ -22,10 +22,15 @@ class Assets:
 
         self.fonts['main'] = pygame.font.Font(os.path.join(ASSETS_DIR, 'fonts', 'main.ttf'), int(GAME_SIZE[0]*0.035))
 
-        self.images['icon'] = pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'start_icon.png')).convert_alpha()
+        self.images['icon'] = pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'gift_icon.png')).convert_alpha()
         self.images['cursor'] = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'cursor.png')).convert_alpha(), 0.02)
-        self.images['btn'] = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'btn.png')).convert_alpha(), 0.25)
-        self.images['btn_active'] = self.resize(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'btn_active.png')).convert_alpha(), self.images['btn'].get_size())
+        self.images['txt_btn'] = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'txt_btn.png')).convert_alpha(), 0.25)
+        self.images['txt_btn_active'] = self.resize(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'txt_btn_active.png')).convert_alpha(), self.images['txt_btn'].get_size())
+        self.images['ico_btn'] = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'ico_btn.png')).convert_alpha(), 0.05)
+        self.images['ico_btn_active'] = self.resize(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'ico_btn_active.png')).convert_alpha(), self.images['ico_btn'].get_size())
+        self.images['gift_icon'] = self.resize(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'gift_icon.png')).convert_alpha(), tuple([i*0.65 for i in self.images['ico_btn'].get_size()]))
+        self.images['coal_icon'] = self.resize(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'coal_icon.png')).convert_alpha(), tuple([i*0.65 for i in self.images['ico_btn'].get_size()]))
+        self.images['exit_icon'] = self.resize(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'exit_icon.png')).convert_alpha(), tuple([i*0.65 for i in self.images['ico_btn'].get_size()]))
 
         self.images['houses'] = [{
             'image': self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'sprites', 'house_1.png')).convert_alpha(), 0.2),
