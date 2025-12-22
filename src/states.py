@@ -2,8 +2,8 @@ import pygame
 from random import randint, uniform, choice
 from math import ceil
 from .sprites import Santa, Bg_Object, House, Gift
-from .ui import MenuButton, GameButton
-from .settings import WORLD_SPEED, MUSIC_CHANNEL_ID, GROUND_LEVEL, BAR_HEIGHT, BAR_SIDE_MARGINS, GRAVITY
+from .ui import MenuButton, GameButton, Scoreboard
+from .settings import WORLD_SPEED, MUSIC_CHANNEL_ID, GROUND_LEVEL, BAR_HEIGHT, BAR_SIDE_MARGINS, GRAVITY, GAME_SIZE
 
 class State:
     def __init__(self, game, assets):
@@ -71,6 +71,8 @@ class GameState(State):
         self.assets = assets
         self.game = game
         self.world_speed = WORLD_SPEED
+
+        self.scoreboard = Scoreboard(self.assets, GAME_SIZE[0]-BAR_SIDE_MARGINS, BAR_HEIGHT)
 
         self.sw = self.assets.images['sky'].get_width()
         self.sh = self.assets.images['sky'].get_height()
@@ -234,7 +236,7 @@ class GameState(State):
             sprite.fall(dt)
             sprite.shift(dt)
             if house:
-                sprite.handle_chimney_collision(house.get_chimney_pos(), house.obedience)
+                self.scoreboard.add_points(sprite.handle_chimney_collision(house.get_chimney_pos(), house.obedience))
             # kill if no longer visible
             if sprite.rect.topright[0] < 0:
                 sprite.kill()
@@ -246,6 +248,7 @@ class GameState(State):
         self.gift_btn.draw(surface)
         self.coal_btn.draw(surface)
         self.exit_btn.draw(surface)
+        self.scoreboard.draw(surface)
 
         self.bg_pines_g.draw(surface)
         self.bg_slopes_g.draw(surface)

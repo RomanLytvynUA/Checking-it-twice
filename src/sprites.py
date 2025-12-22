@@ -1,4 +1,5 @@
 import pygame
+from .settings import DELIVERY_POINTS, FALSE_DELIVERY_POINTS
 
 class AnimatedSprite(pygame.sprite.Sprite):
     def __init__(self, frames, x, y, animation_speed, loop=True):
@@ -69,10 +70,13 @@ class Gift(AnimatedSprite):
     def handle_chimney_collision(self, pos, obedience):
         if self.rect.collidepoint(pos):
             if (self.type == 'gift' and obedience == 'nice') or (self.type == 'coal' and obedience == 'naughty'):
-                print("add points")
+                self.kill()
+                return DELIVERY_POINTS
             else:
-                print("subtract points")
-            self.kill()
+                self.kill()
+                return FALSE_DELIVERY_POINTS
+        else:
+            return 0
 
     def fall(self, dt):
         if self.rect.bottom+self.y_speed*dt < self.ground_level and not self.grounded:

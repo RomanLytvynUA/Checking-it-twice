@@ -8,6 +8,11 @@ FPS = 60
 WORLD_SPEED = 100
 GRAVITY = WORLD_SPEED * 3
 
+SCORE_TEXT_COLOR = (82, 48, 22)
+
+DELIVERY_POINTS = 10
+FALSE_DELIVERY_POINTS = -5
+
 FILE_PATH = os.path.abspath(__file__)
 SRC_DIR = os.path.dirname(FILE_PATH)
 BASE_DIR = os.path.dirname(SRC_DIR)

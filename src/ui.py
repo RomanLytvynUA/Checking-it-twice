@@ -1,4 +1,5 @@
 import pygame
+from .settings import SCORE_TEXT_COLOR
 
 class MenuButton:
     def __init__(self, assets, x, y, text=""):
@@ -50,6 +51,31 @@ class MenuButton:
                 self.is_pressed = False
         
         return False
+
+
+class Scoreboard:
+    def __init__(self, assets, x, y):
+        self.assets = assets
+        self.score = 0
+        self.board_image = self.assets.images['scoreboard']
+        
+        self.board_rect = self.board_image.get_rect(topright=(x, y))
+        
+        self.update_text_surface()
+
+    def update_text_surface(self):
+        self.text_surface = self.assets.fonts['main'].render(f"{self.score}", True, SCORE_TEXT_COLOR)
+        self.text_surface_rect = self.text_surface.get_rect(center=self.board_rect.center)
+
+    def add_points(self, points):
+        self.score += points
+        if self.score < 0:
+            self.score = 0
+        self.update_text_surface()
+
+    def draw(self, surface):
+        surface.blit(self.board_image, self.board_rect)
+        surface.blit(self.text_surface, self.text_surface_rect)
 
 
 class GameButton:
