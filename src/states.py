@@ -1,9 +1,9 @@
 import pygame
 from random import randint, uniform, choice
 from math import ceil
-from .sprites import Santa, Bg_Object, House
+from .sprites import Santa, Bg_Object, House, Gift
 from .ui import MenuButton, GameButton
-from .settings import WORLD_SPEED, MUSIC_CHANNEL_ID, GROUND_LEVEL, BAR_HEIGHT, BAR_SIDE_MARGINS
+from .settings import WORLD_SPEED, MUSIC_CHANNEL_ID, GROUND_LEVEL, BAR_HEIGHT, BAR_SIDE_MARGINS, GRAVITY
 
 class State:
     def __init__(self, game, assets):
@@ -80,6 +80,8 @@ class GameState(State):
         self.santa.rect = self.santa.image.get_rect(center=(self.sw/2, self.sh/3.2))
         self.santa.set_state("flying")
 
+        self.santa_sack_pos = (self.santa.rect.left+0.2*self.santa.image.get_width(), self.santa.rect.top+0.6*self.santa.image.get_height())
+
         self.land_g = pygame.sprite.Group()
         self.bg_slopes_g = pygame.sprite.Group()
         self.lights_g = pygame.sprite.Group()
@@ -88,6 +90,8 @@ class GameState(State):
         self.fg_pines_g = pygame.sprite.Group()
         self.fg_slopes_g = pygame.sprite.Group()
         self.houses_g = pygame.sprite.Group()
+        self.gifts_g = pygame.sprite.Group()
+        self.coal_g = pygame.sprite.Group()
 
         self.initial_scene_setup()
 
@@ -190,11 +194,14 @@ class GameState(State):
             self.game.state = MenuState(self.game, self.assets)
 
         if self.gift_btn.handle_event(event):
-            # drop a gift
-            pass
+            gift = Gift(choice(self.assets.images['gifts']), self.santa_sack_pos[0], self.santa_sack_pos[1],
+                         WORLD_SPEED, GRAVITY, GROUND_LEVEL+1, 'gift')
+            self.gifts_g.add(gift)
+
         elif self.coal_btn.handle_event(event):
-            # drop a coal
-            pass
+            coal = Gift(self.assets.images['coal'], self.santa_sack_pos[0], self.santa_sack_pos[1],
+                        WORLD_SPEED, GRAVITY, GROUND_LEVEL, 'coal')
+            self.coal_g.add(coal)
 
     def update(self, dt):
         self.parallax(self.land_g, self.assets.images['ground'], (0, self.ground_level), WORLD_SPEED)
@@ -219,6 +226,13 @@ class GameState(State):
         self.fg_pines_g.update(dt)
         self.fg_slopes_g.update(dt)
         self.houses_g.update(dt)
+
+        for sprite in self.gifts_g.sprites() +self.coal_g.sprites():
+            sprite.fall(dt)
+            sprite.shift(dt)
+            # kill if no longer visible
+            if sprite.rect.topright[0] < 0:
+                sprite.kill()
     
     def draw(self, surface):
         surface.blit(self.assets.images['sky'], (0, 0))
@@ -233,7 +247,8 @@ class GameState(State):
         self.fg_pines_g.draw(surface)
         self.lights_g.draw(surface)
         self.land_g.draw(surface)
-        self.fg_slopes_g.draw(surface)
         self.houses_g.draw(surface)
-
         surface.blit(self.santa.image, self.santa.rect)
+        self.gifts_g.draw(surface)
+        self.coal_g.draw(surface)
+        self.fg_slopes_g.draw(surface)

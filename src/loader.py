@@ -70,3 +70,18 @@ class Assets:
         for i in range(8):
             self.images['santa_flying'].append(self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'sprites', f'santa_flying_{i}.png')).convert_alpha(), 0.25))
         
+        gift_scale = 0.04
+        self.images['gifts'] = []
+        for i in range(1, 19):
+            frames = []
+            frames_num = 5
+            for j in range(1, frames_num+1):
+                frames.append(self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'sprites', f'gift_{i}.png')).convert_alpha(), gift_scale/frames_num*j))
+            self.images['gifts'].append(frames)
+        
+        coal_scale = 0.03
+        coal_frames_num = 10
+        self.images['coal'] = []
+        for i in range(1, coal_frames_num+1):
+            coal_image = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'sprites', f'coal.png')).convert_alpha(), coal_scale)
+            self.images['coal'].append(pygame.transform.rotate(coal_image, 360/coal_frames_num*i))

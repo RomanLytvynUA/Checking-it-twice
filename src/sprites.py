@@ -1,19 +1,24 @@
 import pygame
 
 class AnimatedSprite(pygame.sprite.Sprite):
-    def __init__(self, frames, x, y, animation_speed):
+    def __init__(self, frames, x, y, animation_speed, loop=True):
         super().__init__()
         self.frames = frames
         self.frame_index = 0
         self.animation_speed = animation_speed
         self.image = self.frames[self.frame_index]
         self.rect = self.image.get_rect(topleft=(x, y))
+        self.loop = loop
 
     def animate(self, dt):
         self.frame_index += self.animation_speed * dt
-        if self.frame_index >= len(self.frames):
+        if self.frame_index >= len(self.frames) and self.loop:
             self.frame_index = 0
-        self.image = self.frames[int(self.frame_index)]
+        
+        if self.frame_index < len(self.frames):
+            current_center = self.rect.center
+            self.image = self.frames[int(self.frame_index)]
+            self.rect = self.image.get_rect(center=current_center)
 
     def update(self, dt):
         self.animate(dt)
@@ -41,6 +46,34 @@ class House(Bg_Object):
         super().__init__(image, speed, pos)
         self.chimney_offset = image.get_width()*chimney_offset_ratio
 
+
+class Gift(AnimatedSprite):
+    def __init__(self, frames, x, y, x_speed, y_speed, ground_level, gift_type):
+        self.x_speed = x_speed
+        self.y_speed = y_speed
+        self.ground_level = ground_level
+        self.grounded = False
+        self.type = gift_type
+        
+        loop = False if gift_type == 'gift' else True
+        animation_speed = 20 if gift_type == 'gift' else 10
+        super().__init__(frames, x, y, animation_speed, loop)
+
+    def shift(self, dt):
+        self.rect.x -= self.x_speed*dt
+    
+    def fall(self, dt):
+        if self.rect.bottom+self.y_speed*dt < self.ground_level and not self.grounded:
+            self.rect.y += self.y_speed*dt
+            self.animate(dt)
+        else:
+            self.grounded = True
+            self.rect.bottom = self.ground_level
+
+            # Set to last frame when grounded
+            current_center = self.rect.center
+            self.image = self.frames[-1]
+            self.rect = self.image.get_rect(center=current_center)
 
 class Santa(AnimatedSprite):
     def __init__(self, assets, x, y):
