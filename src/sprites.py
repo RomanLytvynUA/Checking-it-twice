@@ -42,9 +42,13 @@ class Bg_Object(pygame.sprite.Sprite):
 
 
 class House(Bg_Object):
-    def __init__(self, image, speed, chimney_offset_ratio, pos):
+    def __init__(self, image, speed, chimney_offset_ratio, pos, obedience):
         super().__init__(image, speed, pos)
         self.chimney_offset = image.get_width()*chimney_offset_ratio
+        self.obedience = obedience  # 'nice' or 'naughty'
+    
+    def get_chimney_pos(self):
+        return (self.rect.x + self.chimney_offset, self.rect.y)
 
 
 class Gift(AnimatedSprite):
@@ -62,6 +66,14 @@ class Gift(AnimatedSprite):
     def shift(self, dt):
         self.rect.x -= self.x_speed*dt
     
+    def handle_chimney_collision(self, pos, obedience):
+        if self.rect.collidepoint(pos):
+            if (self.type == 'gift' and obedience == 'nice') or (self.type == 'coal' and obedience == 'naughty'):
+                print("add points")
+            else:
+                print("subtract points")
+            self.kill()
+
     def fall(self, dt):
         if self.rect.bottom+self.y_speed*dt < self.ground_level and not self.grounded:
             self.rect.y += self.y_speed*dt

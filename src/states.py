@@ -125,13 +125,15 @@ class GameState(State):
             obj = Bg_Object(image, self.world_speed, (pos_x, self.ground_level-1-image.get_height()))
             self.fg_slopes_g.add(obj)
 
+
     def handle_houses(self, speed):
         if len(self.houses_g) == 0:
             pos_x = self.sw + randint(0, self.sw)
             house_asset = choice(self.assets.images['houses'])
-            obj = House(house_asset['image'], speed, house_asset['chimney_offset_ratio'], (pos_x, self.ground_level-1-house_asset['image'].get_height()))
+            obj = House(house_asset['image'], speed, house_asset['chimney_offset_ratio'],
+                         (pos_x, self.ground_level-1-house_asset['image'].get_height()), choice(["nice", "naughty"]))
             self.houses_g.add(obj)
-        
+
         # kill house when no longer visible
         for sprite in self.houses_g.sprites():
             if sprite.rect.topright[0] < 0:
@@ -227,9 +229,12 @@ class GameState(State):
         self.fg_slopes_g.update(dt)
         self.houses_g.update(dt)
 
-        for sprite in self.gifts_g.sprites() +self.coal_g.sprites():
+        house = self.houses_g.sprites()[0] if len(self.houses_g.sprites()) > 0 else None
+        for sprite in self.gifts_g.sprites() + self.coal_g.sprites():
             sprite.fall(dt)
             sprite.shift(dt)
+            if house:
+                sprite.handle_chimney_collision(house.get_chimney_pos(), house.obedience)
             # kill if no longer visible
             if sprite.rect.topright[0] < 0:
                 sprite.kill()
