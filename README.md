@@ -76,7 +76,6 @@ python3 main.py
   - [ ] Settings tab
   - [x] Parallax Background Scrolling
   - [x] Santa Physics & Movement
-  - [ ] Randomized houses generation
-  - [ ] Dossier system
+  - [x] Randomized houses generation
+  - [x] Dossier system
   - [ ] Random events
-  - [ ] Dossier System
