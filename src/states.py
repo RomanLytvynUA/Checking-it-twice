@@ -2,7 +2,7 @@ import pygame
 from random import randint, uniform, choice
 from math import ceil
 from .sprites import Santa, Bg_Object, House, Gift
-from .ui import MenuButton, GameButton, Scoreboard
+from .ui import MenuButton, GameButton, Scoreboard, DossierPrompt, Dossier
 from .settings import WORLD_SPEED, MUSIC_CHANNEL_ID, GROUND_LEVEL, BAR_HEIGHT, BAR_SIDE_MARGINS, GRAVITY, GAME_SIZE
 
 class State:
@@ -82,6 +82,8 @@ class GameState(State):
         self.santa.rect = self.santa.image.get_rect(center=(self.sw/2, self.sh/3.2))
         self.santa.set_state("flying")
 
+        self.dossier = Dossier(self.assets, "nice")
+
         self.santa_sack_pos = (self.santa.rect.left+0.2*self.santa.image.get_width(), self.santa.rect.top+0.6*self.santa.image.get_height())
 
         self.land_g = pygame.sprite.Group()
@@ -91,6 +93,7 @@ class GameState(State):
         self.bg_pines_g = pygame.sprite.Group()
         self.fg_pines_g = pygame.sprite.Group()
         self.fg_slopes_g = pygame.sprite.Group()
+        self.prompts_g = pygame.sprite.Group()
         self.houses_g = pygame.sprite.Group()
         self.gifts_g = pygame.sprite.Group()
         self.coal_g = pygame.sprite.Group()
@@ -136,10 +139,17 @@ class GameState(State):
                          (pos_x, self.ground_level-1-house_asset['image'].get_height()), choice(["nice", "naughty"]))
             self.houses_g.add(obj)
 
-        # kill house when no longer visible
+            prompt = DossierPrompt(self.assets, obj.get_chimney_pos())
+            self.prompts_g.add(prompt)
+
+            self.dossier.nice = True if obj.obedience == 'nice' else False
+            self.dossier.generate_contents()
+
+        # kill house and close dossier when no longer visible
         for sprite in self.houses_g.sprites():
             if sprite.rect.topright[0] < 0:
                 sprite.kill()
+                self.dossier.shown = False
 
 
     def prop(self, group, images, speed, max, max_scaling):
@@ -207,6 +217,13 @@ class GameState(State):
                         WORLD_SPEED, GRAVITY, GROUND_LEVEL, 'coal')
             self.coal_g.add(coal)
 
+        elif self.dossier.handle_event(event):
+            self.dossier.shown = False
+
+        for prompt in self.prompts_g.sprites():
+            if prompt.handle_event(event):
+                self.dossier.shown = True
+
     def update(self, dt):
         self.parallax(self.land_g, self.assets.images['ground'], (0, self.ground_level), WORLD_SPEED)
         self.parallax(self.bg_slopes_g, self.assets.images['slopes'], (0, 
@@ -230,6 +247,7 @@ class GameState(State):
         self.fg_pines_g.update(dt)
         self.fg_slopes_g.update(dt)
         self.houses_g.update(dt)
+        self.prompts_g.update(dt, WORLD_SPEED)
 
         house = self.houses_g.sprites()[0] if len(self.houses_g.sprites()) > 0 else None
         for sprite in self.gifts_g.sprites() + self.coal_g.sprites():
@@ -255,8 +273,15 @@ class GameState(State):
         self.fg_pines_g.draw(surface)
         self.lights_g.draw(surface)
         self.land_g.draw(surface)
+
         self.houses_g.draw(surface)
+        self.prompts_g.draw(surface)
+
         surface.blit(self.santa.image, self.santa.rect)
+
         self.gifts_g.draw(surface)
         self.coal_g.draw(surface)
         self.fg_slopes_g.draw(surface)
+
+        if self.dossier.shown:
+            self.dossier.draw(surface)

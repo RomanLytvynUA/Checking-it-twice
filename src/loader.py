@@ -1,5 +1,6 @@
 import pygame
 import os
+import json
 from .settings import ASSETS_DIR, GAME_SIZE, BAR_HEIGHT, BAR_OPACITY
 
 class Assets:
@@ -16,11 +17,14 @@ class Assets:
                                                          int(GAME_SIZE[0]*percentage/surface.get_width()*surface.get_height())))
 
     def load(self):
+        self.behaviour = json.load(open(os.path.join(ASSETS_DIR, 'behaviour.json')))
+
         self.audio['menu'] = pygame.mixer.Sound(os.path.join(ASSETS_DIR, 'audio', 'menu.ogg'))
         self.audio['main'] = pygame.mixer.Sound(os.path.join(ASSETS_DIR, 'audio', 'main.ogg'))
         self.audio['main'].set_volume(0.3)
 
         self.fonts['main'] = pygame.font.Font(os.path.join(ASSETS_DIR, 'fonts', 'main.ttf'), int(GAME_SIZE[0]*0.035))
+        self.fonts['dossier'] = pygame.font.Font(os.path.join(ASSETS_DIR, 'fonts', 'dossier.ttf'), int(GAME_SIZE[0]*0.035))
 
         self.images['icon'] = pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'gift_icon.png')).convert_alpha()
         self.images['cursor'] = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'cursor.png')).convert_alpha(), 0.02)
@@ -34,6 +38,14 @@ class Assets:
         self.images['exit_icon'] = self.resize(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'exit_icon.png')).convert_alpha(), tuple([i*0.65 for i in self.images['ico_btn'].get_size()]))
         self.images['top_bar'] = self.resize(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'top_bar.png')).convert_alpha(), (GAME_SIZE[0], 1.11*(self.images['ico_btn'].get_height()+2*BAR_HEIGHT)))
         self.images['top_bar'].set_alpha(int(255*BAR_OPACITY))
+        self.images['info_btn'] = self.resize(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'info_btn.png')).convert_alpha(), tuple([i*1 for i in self.images['gift_icon'].get_size()]))
+
+        self.images['list_bg'] = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'list_bg.png')).convert_alpha(), 0.5)
+        self.images['ribbon'] = self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'ribbon.png')).convert_alpha(), 0.05)
+        self.images['portraits'] = []
+        for portrait in os.listdir(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'portraits')):
+            if portrait.endswith('.png'):   
+                self.images['portraits'].append(self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'ui', 'portraits', portrait)).convert_alpha(), 0.085))
 
         self.images['houses'] = [{
             'image': self.adapt(pygame.image.load(os.path.join(ASSETS_DIR, 'graphics', 'sprites', 'house_1.png')).convert_alpha(), 0.2),

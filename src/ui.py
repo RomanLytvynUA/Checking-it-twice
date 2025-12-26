@@ -1,5 +1,6 @@
 import pygame
-from .settings import SCORE_TEXT_COLOR
+from .settings import SCORE_TEXT_COLOR, PROMPT_OFFSET_Y, GAME_SIZE, GROUND_LEVEL
+from random import choice, randint
 
 class MenuButton:
     def __init__(self, assets, x, y, text=""):
@@ -127,3 +128,120 @@ class GameButton:
                 self.is_pressed = False
         
         return False
+
+class DossierPrompt(pygame.sprite.Sprite):
+    def __init__(self, assets, chimney_pos):
+        super().__init__()
+        self.assets = assets
+
+        self.original_image = self.assets.images['info_btn']
+        pressed_scale = 0.9
+        self.pressed_image = pygame.transform.scale_by(self.original_image, pressed_scale)
+
+        self.image = self.original_image
+        self.rect = self.image.get_rect(center=(chimney_pos[0], chimney_pos[1] - PROMPT_OFFSET_Y))
+
+        self.is_pressed = False
+        self.is_hovered = False
+
+    def update(self, dt, world_speed):
+        self.rect.x -= world_speed * dt
+        
+        if self.is_pressed and self.is_hovered:
+            current_center = self.rect.center
+            self.image = self.pressed_image
+            self.rect = self.image.get_rect(center=current_center)
+        else:
+            current_center = self.rect.center
+            self.image = self.original_image
+            self.rect = self.image.get_rect(center=current_center)
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEMOTION:
+            self.is_hovered = self.rect.collidepoint(event.pos)
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1 and self.is_hovered:
+                self.is_pressed = True
+
+        elif event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1:
+                clicked = self.is_pressed and self.is_hovered
+                self.is_pressed = False
+                if clicked:
+                    return True
+        
+        return False
+
+
+class Dossier:
+    def __init__(self, assets, nice):
+        self.shown = False
+        self.assets = assets
+        self.nice = nice
+        self.image = self.assets.images['list_bg']
+        self.rect = self.image.get_rect(center=(GAME_SIZE[0]//2, GROUND_LEVEL//2))
+        self.line_spacing = 35
+
+        self.behaviour_json = self.assets.behaviour
+        self.behavior = []
+
+        clicked_scale = 0.95
+        self.original_ribbon = self.assets.images['ribbon']
+        self.clicked_ribbon = pygame.transform.scale_by(self.original_ribbon, clicked_scale)
+        self.ribbon_image = self.original_ribbon
+        self.ribbon_rect = self.ribbon_image.get_rect(midtop=(self.rect.centerx, self.rect.top))
+        self.is_hovered = False
+        self.is_pressed = False
+
+        self.portrait = choice(self.assets.images['portraits'])
+        self.portrait_rect = self.portrait.get_rect(center=(self.rect.centerx, self.rect.top + 1.5*self.ribbon_rect.height))
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
+        surface.blit(self.ribbon_image, self.ribbon_rect)
+
+        if self.is_pressed and self.is_hovered:
+            self.ribbon_image = self.clicked_ribbon
+        else:
+            self.ribbon_image = self.original_ribbon
+        surface.blit(self.portrait, self.portrait_rect)
+
+        for i, behav in enumerate(self.behavior):
+            text_surface = self.assets.fonts['dossier'].render(behav, True, (0, 0, 0))
+            text_rect = text_surface.get_rect(center=(self.rect.centerx, self.portrait_rect.bottom + self.line_spacing*(i+1)))
+            surface.blit(text_surface, text_rect)
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEMOTION:
+            self.is_hovered = self.ribbon_rect.collidepoint(event.pos)
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1 and self.is_hovered:
+                self.is_pressed = True
+
+        elif event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1:
+                clicked = self.is_pressed and self.is_hovered
+                self.is_pressed = False
+                if clicked:
+                    return True
+        
+        return False
+
+    def generate_contents(self):
+        self.portrait = choice(self.assets.images['portraits'])
+
+        self.behavior = []
+        deviation_index = randint(0, 2)
+        for i in range(3):
+            if i == deviation_index:
+                if self.nice:
+                    self.behavior.append(choice(self.behaviour_json['naughty']))
+                else:
+                    self.behavior.append(choice(self.behaviour_json['nice']))
+            else:
+                if self.nice:
+                    self.behavior.append(choice(self.behaviour_json['nice']))
+                else:
+                    self.behavior.append(choice(self.behaviour_json['naughty']))
